@@ -12,7 +12,7 @@ class AssetsBundle extends \yii\web\AssetBundle
     ];
 	
 	public $publishOptions = [
-		//'forceCopy'       => true,
+		'forceCopy'       => true,
 	];
 	
 }

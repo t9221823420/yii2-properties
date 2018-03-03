@@ -1,7 +1,7 @@
 <?php
 
 use yozh\base\components\Migration;
-use yozh\properties\models\PropertiesModel;
+use yozh\properties\models\PropertyModel;
 use yozh\base\components\db\Schema;
 
 /**
@@ -10,7 +10,7 @@ use yozh\base\components\db\Schema;
 class m180301_123441_create_properties_table extends Migration
 {
 	
-	protected static $_table = 'properties';
+	protected static $_table = 'property';
 	
 	public function safeUp()
 	{

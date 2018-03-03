@@ -12,37 +12,64 @@ _widgets = {<?= $widgets;?>};
 
 $(function() {
     
-    $('select[name="inputType"]').on('change', function(){
+    $('select[name="NewModel[inputType]"]').on('change', function(){
         
         if( $(this).val() ){
-            $('select[name="widgetType"]').html( _widgets[$(this).val()] );
-            //$('#widgetType').removeClass('hide');
+            $('select[name="NewModel[widget]"]').html( _widgets[$(this).val()] );
+            //$('#widget').removeClass('hide');
             $('#addButton').removeClass('disabled');
         }
         else{
-            $('select[name="widgetType"]').html('<option value=""><?= Yii::t( 'properties', 'Select input' ) ?></option>');
-            //$('#widgetType').addClass('hide');
+            $('select[name="NewModel[widget]"]').html('<option value=""><?= Yii::t( 'properties', 'Select input' ) ?></option>');
+            //$('#widget').addClass('hide');
             $('#addButton').addClass('disabled');
         }
         
     });
 
     $('#addButton').on('click', function () {
+
+        var _data = {};
         
-        _data = {
-            inputType: $('select[name="inputType"]').val(),
-            widgetType: $('select[name="widgetType"]').val()
-        };
+        $('*[name^="NewModel"]').each(function( _index, _input ) {
+            _data[ $(_input).attr('name') ] = $(_input).val() ;
+        });
         
         $.ajax({
             url: '<?= Url::to(['/properties/get-input']); ?>',
-            //type: 'POST',
+            type: 'POST',
             data: _data,
         })
         .done( function( result ) {
             $('#inputs').append(result);
         })
         ;
+    })
+    
+    $(document).on('click', '.btn.edit-label', function () {
+        
+        _$host = $(this).parents('label');
+        _$label = _$host.find('span.text');
+        _$input = _$host.find('input[name="label"]');
+
+        _$input.val(_$label.text()).one('change', function () {
+            _$label.text( $(this).val() );
+
+            _data = {
+                label: $(this).val(),
+                value: $(this).val(),
+            };
+
+            $.ajax({
+                url: '<?= Url::to(['/properties/update']); ?>',
+                //type: 'POST',
+                data: _data,
+            })
+            .done( function( result ) {
+            })
+            ;
+            
+        });
     })
     
 });

@@ -1,58 +1,51 @@
 <?php
 
 use kartik\helpers\Html;
-use yii\helpers\ArrayHelper;
-use yozh\properties\models\PropertiesModel;
+use yozh\properties\models\NewModel;
+use yozh\properties\AssetsBundle;
+use yii\widgets\Pjax;
 
-$inputs = PropertiesModel::getInputs();
-
-$widget = $this->context;
-
-$widgetsOutput = [];
-foreach( $inputs as $inputType => $inputConfig ) {
-	
-	$widgetsOutput[ $inputType ] = $inputType . ":'";
-	
-	foreach( $inputConfig['widgets'] as $widgetName => $widgetConfig ) {
-		$widgetsOutput[ $inputType ] .= '<option value="' . $widgetConfig['name'] . '">' . $widgetConfig['label'] . '</option>';
-	}
-	
-	$widgetsOutput[ $inputType ] .= "'";
-}
+AssetsBundle::register( $this );
 
 ?>
 
-<div class="row">
+<?= $form->field( $NewModel, 'model', [ 'template' => '{input}', 'options' => [ 'tag' => null ] ] )->hiddenInput(); ?>
+<?= $form->field( $NewModel, 'table_id', [ 'template' => '{input}', 'options' => [ 'tag' => null ] ] )->hiddenInput(); ?>
 
-    <div class="form-group horizontal">
-		<?= Html::label( Yii::t( 'properties', 'Select Input' ), 'inputType' ); ?>
-		<?= Html::dropDownList( 'inputType', null, ArrayHelper::map( $inputs, 'name', 'label' ), [
-			'class'  => 'form-control',
-			'prompt' => Yii::t( 'properties', 'Select ...' ),
-		] ); ?>
-    </div>
-    
-    <div id="widgetType" class="form-group horizontal">
-		<?= Html::label( Yii::t( 'properties', 'Select Widget' ), 'widgetType' ); ?>
-		<?= Html::dropDownList( 'widgetType', null, [], [
-			'class'  => 'form-control',
-			'prompt' => Yii::t( 'properties', 'Select input' ),
-		] ); ?>
+<div class="row new-property-form">
+	
+	<?= $form->field( $NewModel, 'name' )->label( Yii::t( 'properties', 'Name' ) ) ?>
+	
+	<?= $form->field( $NewModel, 'inputType' )
+	         ->label( Yii::t( 'properties', 'Select Input' ) )
+	         ->dropDownList( NewModel::inputsList(), [
+		         'prompt' => Yii::t( 'properties', 'Select ...' ),
+	         ] )
+	; ?>
+	
+	<?= $form->field( $NewModel, 'widget' )
+	         ->label( Yii::t( 'properties', 'Select Widget' ) )
+	         ->dropDownList( [], [
+		         'prompt' => Yii::t( 'properties', 'Select ...' ),
+	         ] )
+	; ?>
+
+    <div class="form-group horizontal btn-group pull-bottom">
+		<?= Html::button( Yii::t( 'properties', 'Add' ), [ 'class' => 'btn btn-success disabled', 'id' => 'addButton' ] ) ?>
     </div>
 
-    <div class="form-group horizontal pull-bottom">
-	    <?= Html::button( Yii::t('properties', 'Add'), ['class' => 'btn btn-success disabled', 'id' => 'addButton']) ?>
-    </div>
-    
 </div>
 
-<div id="inputs">
-
-</div>
-
+<?php
+Pjax::begin( [ 'id' => 'pjax-container' ] );
+print $this->context->renderFile( '@yozh/properties/views/properties.php' , [
+	'properties' => $properties
+]);
+Pjax::end();
+?>
 
 <?php $this->registerJs( $this->render( '_js.php', [
 	'section' => 'onload',
-	'widgets' => implode( ',', $widgetsOutput),
+	'widgets' => implode( ',', NewModel::widgetsListOutput() ),
 ] ), $this::POS_READY );
 ?>

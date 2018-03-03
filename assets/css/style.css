@@ -1,0 +1,13 @@
+.input-menu,
+label .btn
+{
+    display: inline-block;
+    margin-left: 5px;
+}
+
+.dropdown-menu .form-group,
+.dropdown-menu .form-control
+{
+    margin: 10px;
+    width: auto;
+}

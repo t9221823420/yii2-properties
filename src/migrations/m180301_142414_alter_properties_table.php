@@ -8,21 +8,28 @@ use yozh\base\components\db\Schema;
  */
 class m180301_142414_alter_properties_table extends Migration
 {
-	protected static $_table = 'properties';
+	protected static $_table = 'property';
 	
 	public function safeUp()
 	{
 		static::$_columns = [
-			'id'      => $this->primaryKey(),
-			'host'    => $this->string( 256 )->notNull(),
-			'host_id' => $this->bigInteger( 20 )->notNull(),
-			'type'    => $this->enum( Schema::getTypes() )->notNull()->defaultValue( 'string' ),
-			'size'    => $this->integer()->defaultValue( null ),
+			'id'       => $this->primaryKey(),
+			'table'    => $this->string( 256 )->notNull()->after( 'id' ),
+			'table_id' => $this->bigInteger( 20 )->notNull()->after( 'table' ),
+			'model'    => $this->string( 256 )->notNull()->after( 'table_id' ),
+			'type'     => $this->enum( Schema::getTypes() )->notNull()->defaultValue( 'string' ),
+			'size'     => $this->integer()->defaultValue( null )->after( 'type' ),
+			'name'     => $this->string( 256 )->defaultValue( null )->after( 'size' ),
+			
+			'validators'     => $this->text()->defaultValue( null )->after( 'name' ),
+			'widget'     => $this->string( 256 )->defaultValue( null )->after( 'validators' ),
 		];
 		
-		$this->alterTable();
+		$this->alterTable([
+			'mode' => self::ALTER_MODE_IGNORE,
+		]);
 		
-		throw new \yii\base\InvalidParamException( "Break" );
+		return false;
 		
 	}
 	
