@@ -9,32 +9,37 @@ use yozh\base\models\Model as ActiveRecord;
 class PropertyModel extends ActiveRecord
 {
 	
-	const INPUT_TYPE_STRING   = 'string';
-	const INPUT_TYPE_TEXT     = 'text';
-	const INPUT_TYPE_NUMBER   = 'number';
-	const INPUT_TYPE_DATE     = 'date';
-	const INPUT_TYPE_TIME     = 'time';
-	const INPUT_TYPE_DATETIME = 'datetime';
-	const INPUT_TYPE_BOOLEAN  = 'boolean';
-	const INPUT_TYPE_LIST     = 'list';
+	const INPUT_TYPE_STRING = 'type_string';
+	const INPUT_TYPE_TEXT   = 'type_text';
 	
-	const INPUT_TYPE_HASH = 'hash';
-	const INPUT_TYPE_JSON = 'json';
+	const INPUT_TYPE_INTEGER = 'type_integer';
+	const INPUT_TYPE_DECIMAL = 'type_decimal';
 	
-	const WIDGET_TYPE_TEXT       = 'text';
-	const WIDGET_TYPE_TEXTAREA   = 'textarea';
-	const WIDGET_TYPE_TEXTEDITOR = 'texteditor';
-	const WIDGET_TYPE_MARKUP     = 'markup';
+	const INPUT_TYPE_DATE     = 'type_date';
+	const INPUT_TYPE_TIME     = 'type_time';
+	const INPUT_TYPE_DATETIME = 'type_datetime';
 	
-	const WIDGET_TYPE_DATE     = 'date';
-	const WIDGET_TYPE_TIME     = 'time';
-	const WIDGET_TYPE_DATETIME = 'datetime';
+	const INPUT_TYPE_BOOLEAN = 'type_boolean';
+	const INPUT_TYPE_LIST    = 'type_list';
 	
-	const WIDGET_TYPE_SWITCH   = 'switch';
-	const WIDGET_TYPE_RADIO    = 'radio';
-	const WIDGET_TYPE_CHECKBOX = 'checkbox';
-	const WIDGET_TYPE_SELECT   = 'select';
-	const WIDGET_TYPE_DROPDOWN = 'dropdown';
+	const INPUT_TYPE_HASH = 'type_hash';
+	const INPUT_TYPE_JSON = 'type_json';
+	
+	const WIDGET_TYPE_TEXT       = 'widget_text';
+	const WIDGET_TYPE_TEXTAREA   = 'widget_textarea';
+	const WIDGET_TYPE_TEXTEDITOR = 'widget_texteditor';
+	const WIDGET_TYPE_MARKUP     = 'widget_markup';
+	const WIDGET_TYPE_PASSWORD   = 'widget_password';
+	
+	const WIDGET_TYPE_DATE     = 'widget_date';
+	const WIDGET_TYPE_TIME     = 'widget_time';
+	const WIDGET_TYPE_DATETIME = 'widget_datetime';
+	
+	const WIDGET_TYPE_SWITCH   = 'widget_switch';
+	const WIDGET_TYPE_RADIO    = 'widget_radio';
+	const WIDGET_TYPE_CHECKBOX = 'widget_checkbox';
+	const WIDGET_TYPE_SELECT   = 'widget_select';
+	const WIDGET_TYPE_DROPDOWN = 'widget_dropdown';
 	
 	protected static $_inputsConfig;
 	
@@ -62,7 +67,12 @@ class PropertyModel extends ActiveRecord
 			
 			static::INPUT_TYPE_STRING => [
 				'widgets' => [
-					static::WIDGET_TYPE_TEXT,
+					static::WIDGET_TYPE_TEXT => [
+						'rules'  => [
+						
+						],
+						'config' => [],
+					],
 				],
 			],
 			
@@ -74,9 +84,21 @@ class PropertyModel extends ActiveRecord
 				],
 			],
 			
-			static::INPUT_TYPE_DATE,
-			static::INPUT_TYPE_TIME,
-			static::INPUT_TYPE_DATETIME,
+			static::INPUT_TYPE_DATE     => [
+				'widgets' => [
+					static::WIDGET_TYPE_DATE,
+				],
+			],
+			static::INPUT_TYPE_TIME     => [
+				'widgets' => [
+					static::WIDGET_TYPE_TIME,
+				],
+			],
+			static::INPUT_TYPE_DATETIME => [
+				'widgets' => [
+					static::WIDGET_TYPE_DATETIME,
+				],
+			],
 			
 			static::INPUT_TYPE_BOOLEAN => [
 				'widgets' => [
@@ -105,10 +127,10 @@ class PropertyModel extends ActiveRecord
 			}
 			
 			if( !isset( $inputConfig['label'] ) ) { //
-				$inputConfig['label'] = ucfirst( $inputType );
+				$inputConfig['label'] = str_replace( 'type_', '', $inputType );
 			}
 			
-			$inputConfig['label'] = Yii::t( 'properties', $inputConfig['label'] );
+			$inputConfig['label'] = Yii::t( 'app', ucfirst( $inputConfig['label'] ) );
 			
 			foreach( $inputConfig['widgets'] as $widgetName => $widgetConfig ) {
 				
@@ -124,8 +146,10 @@ class PropertyModel extends ActiveRecord
 				}
 				
 				if( !isset( $widgetConfig['label'] ) ) { //
-					$widgetConfig['label'] = ucfirst( $widgetName );
+					$widgetConfig['label'] = str_replace( 'widget_', '', $widgetName );
 				}
+				
+				$widgetConfig['label'] = Yii::t( 'app', ucfirst( $widgetConfig['label'] ) );
 				
 				$inputConfig['widgets'][ $widgetName ] = $widgetConfig;
 				
@@ -137,17 +161,56 @@ class PropertyModel extends ActiveRecord
 		return $inputResult;
 	}
 	
+	static public function getInputsLabels()
+	{
+		return [
+			static::INPUT_TYPE_STRING   => Yii::t( 'properties', 'String' ),
+			static::INPUT_TYPE_TEXT     => Yii::t( 'properties', 'Text' ),
+			static::INPUT_TYPE_INTEGER  => Yii::t( 'properties', 'Integer' ),
+			static::INPUT_TYPE_DECIMAL  => Yii::t( 'properties', 'Decimal' ),
+			static::INPUT_TYPE_DATE     => Yii::t( 'properties', 'Date' ),
+			static::INPUT_TYPE_TIME     => Yii::t( 'properties', 'Time' ),
+			static::INPUT_TYPE_DATETIME => Yii::t( 'properties', 'Datetime' ),
+			static::INPUT_TYPE_BOOLEAN  => Yii::t( 'properties', 'Boolean' ),
+			static::INPUT_TYPE_LIST     => Yii::t( 'properties', 'List' ),
+		
+		];
+	}
+	
 	public function rules()
 	{
 		return [
-			[ [ 'table', 'table_id', 'model' ], 'required' ],
-			[ [ 'type' ], 'string' ],
-			[ [ 'table', 'widget', 'name' ], 'string', 'max' => 256 ],
-			[ [ 'inputType' ], 'in', 'range' => array_keys( static::$_inputsConfig ) ],
-			[ [ 'table_id', 'size' ], 'integer' ],
-			[ [ 'model' ], 'exist', 'skipOnError' => true, 'targetAttribute' => [ 'table_id' => 'id' ], 'targetClass' => $this->getModelClass() ],
+			[ [ 'table', 'owner_id', 'model', 'type', 'widget' ], 'required' ],
+			[ [ 'table', 'name' ], 'string', 'max' => 255 ],
+			[ [ 'inputType', 'type' ], 'in', 'range' => PropertyModel::getInputsList() ],
+			[ [ 'widget' ], 'in', 'range' => PropertyModel::getWidgetsList() ],
+			[ [ 'owner_id' ], 'integer' ],
+			[ [ 'model' ], 'exist', 'skipOnError' => true, 'targetAttribute' => [ 'owner_id' => 'id' ], 'targetClass' => $this->getModelClass() ],
 		
 		];
+	}
+	
+	static public function getInputsList()
+	{
+		return static::_getConstList( 'INPUT_TYPE_' );
+	}
+	
+	static protected function _getConstList( $prefix )
+	{
+		$list = ( new \ReflectionClass( static::class ) )->getConstants();
+		
+		foreach( $list as $key => $const ) {
+			if( strpos( $key, $prefix ) === false ) {
+				unset( $list[ $key ] );
+			}
+		}
+		
+		return $list;
+	}
+	
+	static public function getWidgetsList()
+	{
+		return static::_getConstList( 'WIDGET_TYPE_' );
 	}
 	
 	public function getModelClass()
@@ -159,7 +222,7 @@ class PropertyModel extends ActiveRecord
 			return $data['model'];
 		}
 		else {
-			$this->addError( 'table_id', 'Model not set' );
+			$this->addError( 'owner_id', 'Model not set' );
 		}
 	}
 	
@@ -181,10 +244,16 @@ class PropertyModel extends ActiveRecord
 				$modelClass = parent::__get( $name );
 				
 				if( is_null( $this->_model ) && class_exists( $modelClass ) ) {
-					$this->_model = $modelClass::findOne( $this->getAttribute( 'table_id' ) );
+					$this->_model = $modelClass::findOne( $this->getAttribute( 'table_pk' ) );
 				}
 				
 				return $this->_model;
+			
+			case 'table_pk' :
+			case 'owner_id' :
+			case 'oid' :
+				
+				return parent::__get( 'table_pk' );
 			
 			default:
 				
@@ -222,12 +291,12 @@ class PropertyModel extends ActiveRecord
 					throw new \yii\base\InvalidParamException( "$value have to be instance of Model" );
 				}
 				
-				if( !$this->getAttribute('table' ) ) {
+				if( !$this->getAttribute( 'table' ) ) {
 					$this->setAttribute( 'table', $model::tableName() );
 				}
 				
-				if( !$this->getAttribute('table_id' ) ) {
-					$this->setAttribute( 'table_id', $model->primaryKey );
+				if( !$this->getAttribute( 'table_pk' ) ) {
+					$this->setAttribute( 'table_pk', $model->primaryKey );
 				}
 				
 				parent::__set( $name, $value );
@@ -244,11 +313,22 @@ class PropertyModel extends ActiveRecord
 				
 				$this->_value = $value;
 				
+				$field = $this->getAttribute( 'type' );
+				$this->setAttribute( $field, $value);
+				
 				break;
 			
 			case 'inputType' :
 				
 				parent::__set( 'type', $value );
+				
+				break;
+			
+			case 'table_pk' :
+			case 'owner_id' :
+			case 'oid' :
+				
+				parent::__set( 'table_pk', $value );
 				
 				break;
 			

@@ -8,10 +8,10 @@
 
 namespace yozh\properties\models;
 
+use Yii;
 use yii\base\Model;
 use yozh\properties\models\PropertyModel;
 use yii\helpers\ArrayHelper;
-
 
 class NewModel extends Model
 {
@@ -21,40 +21,66 @@ class NewModel extends Model
 	public $name;
 	public $value;
 	public $model;
-	public $table_id;
+	public $owner_id;
 	
-	public function rules()
+	/**
+	 * @return mixed
+	 */
+	public function getOid()
 	{
-		return [
-			[['inputType', 'widget'], 'required'],
-			[['inputType', 'widget', 'name', 'model'], 'string', 'max' => 256],
-			[['table_id'], 'integer'],
-		];
+		return $this->owner_id;
+	}
+	
+	/**
+	 * @param mixed $oid
+	 */
+	public function setOid( $value ): void
+	{
+		$this->owner_id = $value;
 	}
 	
 	public static function inputsList()
 	{
-		return ArrayHelper::map( PropertyModel::getInputs(), 'name', 'label' );
+		$inputs = PropertyModel::getInputs();
+		
+		$output = [];
+		foreach( $inputs as $inputType => $inputConfig ) {
+			$output[ $inputType ] = $inputConfig['label'];
+		}
+		
+		return $output;
 	}
 	
-	public static function widgetsListOutput( )
+	public static function widgetsListOutput()
 	{
 		$inputs = PropertyModel::getInputs();
 		
-		$widgetsOutput = [];
+		$output = [];
 		foreach( $inputs as $inputType => $inputConfig ) {
 			
-			$widgetsOutput[ $inputType ] = $inputType . ":'";
+			$output[ $inputType ] = $inputType . ":'";
 			
 			foreach( $inputConfig['widgets'] as $widgetName => $widgetConfig ) {
-				$widgetsOutput[ $inputType ] .= '<option value="' . $widgetConfig['name'] . '">' . $widgetConfig['label'] . '</option>';
+				$output[ $inputType ] .= '<option value="' . $widgetConfig['name'] . '">' . $widgetConfig['label'] . '</option>';
 			}
 			
-			$widgetsOutput[ $inputType ] .= "'";
+			$output[ $inputType ] .= "'";
 		}
 		
-		return $widgetsOutput;
+		return $output;
 		
 	}
+	
+	public function rules()
+	{
+		return [
+			[ [ 'inputType', 'widget', 'model', 'owner_id',  ], 'required' ],
+			[ [ 'inputType', 'widget', 'name', 'model' ], 'string', 'max' => 256 ],
+			[ [ 'owner_id' ], 'integer' ],
+			[ [ 'oid' ], 'safe' ],
+		];
+	}
+	
+	
 	
 }

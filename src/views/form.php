@@ -10,7 +10,7 @@ AssetsBundle::register( $this );
 ?>
 
 <?= $form->field( $NewModel, 'model', [ 'template' => '{input}', 'options' => [ 'tag' => null ] ] )->hiddenInput(); ?>
-<?= $form->field( $NewModel, 'table_id', [ 'template' => '{input}', 'options' => [ 'tag' => null ] ] )->hiddenInput(); ?>
+<?= $form->field( $NewModel, 'owner_id', [ 'template' => '{input}', 'options' => [ 'tag' => null ] ] )->hiddenInput(); ?>
 
 <div class="row new-property-form">
 	

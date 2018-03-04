@@ -10,6 +10,7 @@ namespace yozh\properties;
 
 use yozh\properties\models\PropertyModel;
 use yii\base\Model;
+use yii\base\InvalidParamException;
 
 class PropertiesBehavior extends \yozh\base\components\Behavior
 {
@@ -40,25 +41,64 @@ class PropertiesBehavior extends \yozh\base\components\Behavior
 	/**
 	 * @return mixed
 	 */
-	public function getProperties()
+	public function getProperties( $names = null, $one = false )
 	{
-		if( !$this->_properties ){
-			$this->_properties = PropertyModel::findAll([
-				'model' => $this->owner::className(),
-				'table_id' => $this->owner->primaryKey,
-			]);
+		$query = PropertyModel::find()->where( [
+			'model'    => $this->owner::className(),
+			'table_pk' => $this->owner->primaryKey,
+		] )
+		;
+		
+		if( is_string( $names ) ) {
+			$names = [ $names ];
 		}
 		
-		return $this->_properties;
+		if( is_array( $names ) && count( $names ) ) {
+			$query->andWhere( [ 'in', 'name', $names ] );
+		}
+		
+		return $one ? $query->one() : $query->all() ;
 	}
 	
 	/**
 	 * @param mixed $PropertyModel
 	 */
-	public function setProperties( PropertyModel $PropertyModel ): void
+	
+	public function setProperty( $id, $value )
 	{
-		$this->_PropertyModel = $PropertyModel;
+		if( $PropertyModel = PropertyModel::findOne($id) ){
+			
+			$PropertyModel->value = $value;
+			
+			if( $PropertyModel->save() ){
+				return $this->owner;
+			}
+			
+			throw new InvalidParamException( "Cannot save PropertyModel" );
+		}
+		
+		throw new InvalidParamException( "Cannot find PropertyModel" );
 	}
 	
-	
+	public function setProperties( $data = [] )
+	{
+		foreach( $data as $name => $value ) {
+			
+			if( is_string($name) &&  ( $PropertyCollection = $this->getProperties( $name)) ){
+				
+				foreach( $PropertyCollection as $PropertyModel ) {
+
+					$PropertyModel->value = $value;
+					
+					if( !$PropertyModel->save() ){
+						throw new InvalidParamException( "Cannot save PropertyModel" );
+					}
+					
+				}
+				
+			}
+			
+		}
+		
+	}
 }

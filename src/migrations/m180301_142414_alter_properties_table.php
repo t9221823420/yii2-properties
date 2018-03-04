@@ -2,6 +2,7 @@
 
 use yozh\base\components\Migration;
 use yozh\base\components\db\Schema;
+use yozh\properties\models\PropertyModel;
 
 /**
  * Class m180301_142414_add_column_to_properties_table
@@ -14,20 +15,33 @@ class m180301_142414_alter_properties_table extends Migration
 	{
 		static::$_columns = [
 			'id'       => $this->primaryKey(),
-			'table'    => $this->string( 256 )->notNull()->after( 'id' ),
-			'table_id' => $this->bigInteger( 20 )->notNull()->after( 'table' ),
-			'model'    => $this->string( 256 )->notNull()->after( 'table_id' ),
-			'type'     => $this->enum( Schema::getTypes() )->notNull()->defaultValue( 'string' ),
-			'size'     => $this->integer()->defaultValue( null )->after( 'type' ),
-			'name'     => $this->string( 256 )->defaultValue( null )->after( 'size' ),
+			'table'    => $this->string()->notNull()->after( 'id' ),
+			'table_pk' => $this->integer()->notNull()->after( 'table' ),
+			'model'    => $this->string()->notNull()->after( 'table_pk' ),
+			'name'     => $this->string()->notNull()->after( 'model' ),
+			'type'     => $this->enum( PropertyModel::getInputsList() )->notNull()->defaultValue( PropertyModel::INPUT_TYPE_STRING )->after( 'name' ),
+			'widget'   => $this->enum( PropertyModel::getWidgetsList() )->notNull()->defaultValue( PropertyModel::WIDGET_TYPE_TEXT )->after( 'type' ),
+			'config'   => $this->text()->null()->after( 'widget' ),
 			
-			'validators'     => $this->text()->defaultValue( null )->after( 'name' ),
-			'widget'     => $this->string( 256 )->defaultValue( null )->after( 'validators' ),
+			'validators' => $this->text()->null()->after( 'config' ),
+			
+			'order'  => $this->integer()->null()->after( 'validators' ),
+			'parent' => $this->integer()->null()->after( 'order' ),
+			
+			PropertyModel::INPUT_TYPE_STRING => $this->string()->null()->after( 'validators' ),
+			PropertyModel::INPUT_TYPE_TEXT   => $this->text()->null()->after( PropertyModel::INPUT_TYPE_STRING ),
+			
+			PropertyModel::INPUT_TYPE_INTEGER => $this->integer()->null()->after( PropertyModel::INPUT_TYPE_TEXT ),
+			PropertyModel::INPUT_TYPE_DECIMAL => $this->double()->null()->after( PropertyModel::INPUT_TYPE_INTEGER ),
+			
+			PropertyModel::INPUT_TYPE_DATE     => $this->date()->null()->after( PropertyModel::INPUT_TYPE_DECIMAL ),
+			PropertyModel::INPUT_TYPE_TIME     => $this->time()->null()->after( PropertyModel::INPUT_TYPE_DATE ),
+			PropertyModel::INPUT_TYPE_DATETIME => $this->dateTime()->null()->after( PropertyModel::INPUT_TYPE_TIME ),
 		];
 		
-		$this->alterTable([
+		$this->alterTable( [
 			'mode' => self::ALTER_MODE_IGNORE,
-		]);
+		] );
 		
 		return false;
 		

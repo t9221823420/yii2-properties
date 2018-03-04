@@ -1,6 +1,7 @@
 <?php
 
 use yii\helpers\Url;
+use yozh\properties\models\PropertyModel;
 
 ?>
 
@@ -40,8 +41,23 @@ $(function() {
             type: 'POST',
             data: _data,
         })
-        .done( function( result ) {
-            $('#inputs').append(result);
+        .done( function( _response ) {
+
+            $('#inputs').append( _response.html );
+
+            switch ( _response.widget ) {
+                case '<?= PropertyModel::WIDGET_TYPE_TEXTEDITOR ?>':
+
+                    var _editorId = 'editor-' + _response.id;
+
+                    tinyMCE.EditorManager.execCommand('mceAddEditor', true, _editorId );
+                    initTinyEvents( tinyMCE.EditorManager.get( _editorId ) );
+                    
+                    break;
+
+                default:
+            }
+            
         })
         ;
     })
@@ -52,27 +68,76 @@ $(function() {
         _$label = _$host.find('span.text');
         _$input = _$host.find('input[name="label"]');
 
-        _$input.val(_$label.text()).one('change', function () {
-            _$label.text( $(this).val() );
+        _$input.val( _$label.text() ).one('change', function () {
+            
 
             _data = {
-                label: $(this).val(),
-                value: $(this).val(),
+                id: _$input.data('id'),
+                name: _$input.val(),
             };
 
             $.ajax({
-                url: '<?= Url::to(['/properties/update']); ?>',
+                url: '<?= Url::to( [ '/properties/name-update', ] ); ?>',
                 //type: 'POST',
                 data: _data,
             })
             .done( function( result ) {
+                _$label.text( _$input.val() );
             })
             ;
             
         });
     })
-    
+
+
+    $(document).on('change', 'input[name^="PropertyModel"], textarea[name^="PropertyModel"]', function () {
+
+        var _$host = $(this);
+        var _id = _$host.data('id');
+        var _data = {
+            value: _$host.val()
+        };
+        
+        inptuChage( _$host, _id, _data );
+        
+    })
+
+    $.each( tinyMCE.editors, function( _index, _editor ){
+        initTinyEvents(_editor);
+    });
+
 });
+
+
+function initTinyEvents(_editor){
+
+    _editor.on('change', function( ) {
+
+        var _$host = $(_editor.getElement());
+        var _id = _$host.data('id');
+        var _data = {
+            value: _editor.getContent()
+        };
+
+        inptuChage( _$host, _id, _data );
+    });
+
+
+}
+
+function inptuChage( _$host, _id, _data ){
+
+    $.ajax({
+        url: '<?= Url::to(['/properties/update', 'id' => '' ]); ?>' + _id,
+        type: 'POST',
+        data: _data,
+    })
+    .done( function( result ) {
+    })
+    ;
+
+
+}
 
 <? break; case 'crud' : ?>
 

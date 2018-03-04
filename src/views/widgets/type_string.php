@@ -6,7 +6,12 @@ use yii\widgets\ActiveForm;
 ob_start();
 $form = ActiveForm::begin();
 
-$field = null;
+$field   = null;
+$options = [
+	'inputOptions' => [
+		'class' => 'form-control',
+	],
+];
 
 /**
  * @var $PropertyModel \yii\db\ActiveRecord
@@ -15,26 +20,26 @@ if( $PropertyModel->isNewRecord ) { //
 	$attribute = '[new][]value';
 }
 else { //
+	
 	$attribute = '[' . $PropertyModel->primaryKey . ']value';
+	
+	$field = $PropertyModel->type;
+	
+	$options   = array_merge_recursive( $options, [
+		'inputOptions' => [
+			'data-id' => $PropertyModel->primaryKey,
+			'value' => $PropertyModel->$field,
+		],
+	] );
 }
+
+$field = $form->field( $PropertyModel, $attribute, $options );
 
 switch( $PropertyModel->widget ) {
 	
-	case 'text':
+	case PropertyModel::WIDGET_TYPE_TEXT :
 		
-		$field = $form->field( $PropertyModel, $attribute ); // 'template'=>'{input}{foo}'
-		
-		break;
-	
-	case 'textarea':
-		
-		break;
-	
-	case 'texteditor':
-		
-		break;
-	
-	case 'markup':
+		// 'template'=>'{input}{foo}'
 		
 		break;
 	
@@ -43,7 +48,7 @@ switch( $PropertyModel->widget ) {
 ActiveForm::end();
 ob_get_clean();
 
-$field->label( Yii::t( 'app', ucfirst( !empty( $PropertyModel->name ) ? $PropertyModel->name : $PropertyModel->type ) ) );
+$field->label( Yii::t( 'app', !empty( $PropertyModel->name ) ? $PropertyModel->name : str_replace( 'type_', '', $PropertyModel->type ) ) );
 
 $menu = $this->context->renderFile( '@yozh/properties/views/_inputMenu.php', [
 	'PropertyModel' => $PropertyModel,

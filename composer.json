@@ -15,6 +15,7 @@
   "require": {
     "yozh/yii2-base": "@dev",
     "kartik-v/yii2-helpers": "dev-master",
+    "powerkernel/yii2-tinymce": "*"
   },
   "extra": {
     "_bootstrap": "yozh\\properties\\Bootstrap"

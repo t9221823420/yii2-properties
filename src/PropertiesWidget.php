@@ -47,16 +47,16 @@ class PropertiesWidget extends \yozh\base\components\Widget
 	{
 		$NewModel = new NewModel( [
 			'model'    => $this->_ownerModel::className(),
-			'table_id' => $this->_ownerModel->primaryKey,
+			'owner_id' => $this->_ownerModel->primaryKey,
 		] );
 		
 		return $this->render( 'form', [
 			'form'       => $this->form,
 			'NewModel'   => $NewModel,
-			'properties' => PropertyModel::findAll( [
+			'properties' => PropertyModel::find()->orderBy( 'order')->where( [
 				'model'    => $this->_ownerModel::className(),
-				'table_id' => $this->_ownerModel->primaryKey,
-			] ),
+				'table_pk' => $this->_ownerModel->primaryKey,
+			] )->all(),
 		] );
 	}
 	

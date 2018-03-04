@@ -15,6 +15,7 @@ use yii\helpers\Url;
             <div class="form-group">
 				<?= Html::textInput( 'label', '', [
 					'class' => 'form-control',
+                    'data-id' => $PropertyModel->primaryKey,
 				] ); ?>
             </div>
         </div>
@@ -24,9 +25,9 @@ use yii\helpers\Url;
 <?= Html::a( '<i class="glyphicon glyphicon-trash"></i>',
 	Url::to( [
 		'/properties/delete',
-		'id'       => $PropertyModel->primaryKey,
-		'model'    => $PropertyModel->model::className(),
-		'model_id' => $PropertyModel->model->primaryKey,
+		'id'    => $PropertyModel->primaryKey,
+		'model' => $PropertyModel->model::className(),
+		'oid'   => $PropertyModel->model->primaryKey,
 	] ),
 	[
 		'class'        => 'btn btn-danger btn-xs btn-delete',

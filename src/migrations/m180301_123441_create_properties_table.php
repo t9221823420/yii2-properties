@@ -18,7 +18,7 @@ class m180301_123441_create_properties_table extends Migration
 			'id'      => $this->primaryKey(),
 			'host'    => $this->string( 256 )->notNull(),
 			'host_id' => $this->bigInteger( 20 )->notNull(),
-			'type'    => $this->enum( Schema::getTypes() )->notNull()->defaultValue( 'string' ),
+			'type'    => $this->enum( Schema::getTypesList() )->notNull()->defaultValue( 'string' ),
 			'size'    => $this->integer()->defaultValue( null ),
 		];
 		
