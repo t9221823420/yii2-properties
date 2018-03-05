@@ -22,7 +22,10 @@ class m000000_000000_properties_table_dev extends Migration
 			'table_pk' => $this->integer()->notNull()->after( 'table' ),
 			'model'    => $this->string()->notNull()->after( 'table_pk' ),
 			'name'     => $this->string()->notNull()->after( 'model' ),
-			'type'     => $this->enum( PropertyModel::getInputsList() )->notNull()->defaultValue( PropertyModel::INPUT_TYPE_STRING )->after( 'name' ),
+			'type'     => $this->enum( PropertyModel::getInputsList() )
+			                   ->notNull()
+			                   ->defaultValue( PropertyModel::INPUT_TYPE_STRING )
+			                   ->after( 'name' ),
 			'widget'   => $this->enum( PropertyModel::getWidgetsList() )->notNull()->defaultValue( PropertyModel::WIDGET_TYPE_TEXT )->after( 'type' ),
 			'config'   => $this->text()->null()->after( 'widget' ),
 			
