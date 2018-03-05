@@ -7,10 +7,13 @@ use yozh\properties\models\PropertyModel;
 /**
  * Class m180301_142414_add_column_to_properties_table
  */
-class m180301_142414_alter_properties_table extends Migration
+class m000000_000000_properties_table_dev extends Migration
 {
 	protected static $_table = 'property';
 	
+	/**
+	 * {@inheritdoc}
+	 */
 	public function safeUp()
 	{
 		static::$_columns = [
@@ -52,8 +55,6 @@ class m180301_142414_alter_properties_table extends Migration
 	 */
 	public function safeDown()
 	{
-		echo "m180301_142414_add_column_to_properties_table cannot be reverted.\n";
-		
 		return false;
 	}
 	

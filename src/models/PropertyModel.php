@@ -138,7 +138,10 @@ class PropertyModel extends ActiveRecord
 				
 				if( !is_array( $widgetConfig ) ) {
 					$widgetName   = $widgetConfig;
-					$widgetConfig = [];
+					$widgetConfig = [
+						'rules'  => [],
+						'config' => [],
+					];
 				}
 				
 				if( !isset( $widgetConfig['name'] ) ) { //
