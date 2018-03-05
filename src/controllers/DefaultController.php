@@ -27,14 +27,17 @@ class DefaultController extends Controller
 				$PropertyModel->name = $PropertyModel->type;
 			}
 			
-			$PropertyModel->name = str_replace( 'type_', '', $PropertyModel->name );
+			$PropertyModel->name = PropertyModel::getLabel( $PropertyModel->name );
 			
 			$inputsConfig = PropertyModel::getInputs();
 			extract( $NewModel->getAttributes() );
 			
-			$model = $PropertyModel->model;
+			/*
+			$testModel = $PropertyModel->model;
+			$foo =  $testModel->getProperties('some prop', true, 'some default value')->value;
+			*/
 			
-			if( isset( $inputsConfig[ $inputType ]['widgets'][ $widget ] )
+			if( !isset($testModel) && isset( $inputsConfig[ $inputType ]['widgets'][ $widget ] )
 				&& $PropertyModel->validate( null, false ) // because ->save() clears errors,
 				&& $PropertyModel->save( false )
 			) {

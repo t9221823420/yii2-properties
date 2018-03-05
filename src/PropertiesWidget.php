@@ -30,7 +30,7 @@ class PropertiesWidget extends \yozh\base\components\Widget
 	/**
 	 * @param mixed $ownerModel
 	 */
-	public function setOwnerModel( Model $ownerModel ): void
+	public function setOwnerModel( Model $ownerModel )
 	{
 		
 		if( !isset( $ownerModel->properties ) ) {

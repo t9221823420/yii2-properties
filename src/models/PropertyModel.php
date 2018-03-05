@@ -25,6 +25,8 @@ class PropertyModel extends ActiveRecord
 	const INPUT_TYPE_HASH = 'type_hash';
 	const INPUT_TYPE_JSON = 'type_json';
 	
+	const INPUT_TYPE_DEFAULT = self::INPUT_TYPE_STRING;
+	
 	const WIDGET_TYPE_TEXT       = 'widget_text';
 	const WIDGET_TYPE_TEXTAREA   = 'widget_textarea';
 	const WIDGET_TYPE_TEXTEDITOR = 'widget_texteditor';
@@ -49,119 +51,6 @@ class PropertyModel extends ActiveRecord
 	public static function tableName()
 	{
 		return 'property';
-	}
-	
-	public static function getInputs()
-	{
-		
-		if( !static::$_inputsConfig ) {
-			static::$_inputsConfig = static::_initConfig();
-		}
-		
-		return static::$_inputsConfig;
-	}
-	
-	protected static function _initConfig()
-	{
-		$config = [
-			
-			static::INPUT_TYPE_STRING => [
-				'widgets' => [
-					static::WIDGET_TYPE_TEXT => [
-						'rules'  => [
-						
-						],
-						'config' => [],
-					],
-				],
-			],
-			
-			static::INPUT_TYPE_TEXT => [
-				'widgets' => [
-					static::WIDGET_TYPE_TEXTAREA,
-					static::WIDGET_TYPE_TEXTEDITOR,
-					static::WIDGET_TYPE_MARKUP,
-				],
-			],
-			
-			static::INPUT_TYPE_DATE     => [
-				'widgets' => [
-					static::WIDGET_TYPE_DATE,
-				],
-			],
-			static::INPUT_TYPE_TIME     => [
-				'widgets' => [
-					static::WIDGET_TYPE_TIME,
-				],
-			],
-			static::INPUT_TYPE_DATETIME => [
-				'widgets' => [
-					static::WIDGET_TYPE_DATETIME,
-				],
-			],
-			
-			static::INPUT_TYPE_BOOLEAN => [
-				'widgets' => [
-					static::WIDGET_TYPE_SWITCH,
-					static::WIDGET_TYPE_RADIO,
-				],
-			],
-		
-		];
-		
-		$inputResult = [];
-		
-		foreach( $config as $inputType => $inputConfig ) {
-			
-			if( !is_array( $inputConfig ) ) {
-				$inputType   = $inputConfig;
-				$inputConfig = [
-					'widgets' => [
-						$inputType,
-					],
-				];
-			}
-			
-			if( !isset( $inputConfig['name'] ) ) { //
-				$inputConfig['name'] = $inputType;
-			}
-			
-			if( !isset( $inputConfig['label'] ) ) { //
-				$inputConfig['label'] = str_replace( 'type_', '', $inputType );
-			}
-			
-			$inputConfig['label'] = Yii::t( 'app', ucfirst( $inputConfig['label'] ) );
-			
-			foreach( $inputConfig['widgets'] as $widgetName => $widgetConfig ) {
-				
-				unset( $inputConfig['widgets'][ $widgetName ] );
-				
-				if( !is_array( $widgetConfig ) ) {
-					$widgetName   = $widgetConfig;
-					$widgetConfig = [
-						'rules'  => [],
-						'config' => [],
-					];
-				}
-				
-				if( !isset( $widgetConfig['name'] ) ) { //
-					$widgetConfig['name'] = $widgetName;
-				}
-				
-				if( !isset( $widgetConfig['label'] ) ) { //
-					$widgetConfig['label'] = str_replace( 'widget_', '', $widgetName );
-				}
-				
-				$widgetConfig['label'] = Yii::t( 'app', ucfirst( $widgetConfig['label'] ) );
-				
-				$inputConfig['widgets'][ $widgetName ] = $widgetConfig;
-				
-			}
-			
-			$inputResult[ $inputType ] = $inputConfig;
-		}
-		
-		return $inputResult;
 	}
 	
 	static public function getInputsLabels()
@@ -306,6 +195,19 @@ class PropertyModel extends ActiveRecord
 				
 				break;
 			
+			case 'inputType' :
+			case 'type' :
+				
+				parent::__set( 'type', $value );
+				
+				if( empty( $this->getAttribute( 'widget' ) ) ) {
+					
+					$this->setAttribute( 'widget', static::getDefaultWidget( $value )['name'] );
+					
+				}
+				
+				break;
+			
 			case 'json' :
 				
 				parent::__set( $name, json_encode( $value ) );
@@ -317,13 +219,8 @@ class PropertyModel extends ActiveRecord
 				$this->_value = $value;
 				
 				$field = $this->getAttribute( 'type' );
-				$this->setAttribute( $field, $value);
 				
-				break;
-			
-			case 'inputType' :
-				
-				parent::__set( 'type', $value );
+				$this->setAttribute( $field, $value );
 				
 				break;
 			
@@ -339,6 +236,138 @@ class PropertyModel extends ActiveRecord
 				parent::__set( $name, $value );
 			
 		}
+	}
+	
+	static public function getDefaultWidget( $inputType )
+	{
+		$inputs = static::getInputs();
+		
+		if( isset( $inputs[ $inputType ]['widgets'] ) ) {
+			return reset( $inputs[ $inputType ]['widgets'] );
+		}
+		
+		throw new \yii\base\InvalidParamException( "Default widget for inputType '$inputType' not found." );
+	}
+	
+	public static function getInputs()
+	{
+		
+		if( !static::$_inputsConfig ) {
+			static::$_inputsConfig = static::_initConfig();
+		}
+		
+		return static::$_inputsConfig;
+	}
+	
+	protected static function _initConfig()
+	{
+		$config = [
+			
+			static::INPUT_TYPE_STRING => [
+				'widgets' => [
+					static::WIDGET_TYPE_TEXT => [
+						'rules'  => [
+						
+						],
+						'config' => [],
+					],
+				],
+			],
+			
+			static::INPUT_TYPE_TEXT => [
+				'widgets' => [
+					static::WIDGET_TYPE_TEXTAREA,
+					static::WIDGET_TYPE_TEXTEDITOR,
+					static::WIDGET_TYPE_MARKUP,
+				],
+			],
+			
+			/*
+			static::INPUT_TYPE_DATE     => [
+				'widgets' => [
+					static::WIDGET_TYPE_DATE,
+				],
+			],
+			static::INPUT_TYPE_TIME     => [
+				'widgets' => [
+					static::WIDGET_TYPE_TIME,
+				],
+			],
+			static::INPUT_TYPE_DATETIME => [
+				'widgets' => [
+					static::WIDGET_TYPE_DATETIME,
+				],
+			],
+			
+			static::INPUT_TYPE_BOOLEAN => [
+				'widgets' => [
+					static::WIDGET_TYPE_SWITCH,
+					static::WIDGET_TYPE_RADIO,
+				],
+			],
+			*/
+		
+		];
+		
+		$inputResult = [];
+		
+		foreach( $config as $inputType => $inputConfig ) {
+			
+			if( !is_array( $inputConfig ) ) {
+				$inputType   = $inputConfig;
+				$inputConfig = [
+					'widgets' => [
+						$inputType,
+					],
+				];
+			}
+			
+			if( !isset( $inputConfig['name'] ) ) { //
+				$inputConfig['name'] = $inputType;
+			}
+			
+			if( !isset( $inputConfig['label'] ) ) { //
+				$inputConfig['label'] = static::getLabel( $inputType );
+			}
+			
+			$inputConfig['label'] = Yii::t( 'app', ucfirst( $inputConfig['label'] ) );
+			
+			foreach( $inputConfig['widgets'] as $widgetName => $widgetConfig ) {
+				
+				unset( $inputConfig['widgets'][ $widgetName ] );
+				
+				if( !is_array( $widgetConfig ) ) {
+					$widgetName   = $widgetConfig;
+					$widgetConfig = [
+						'rules'  => [],
+						'config' => [],
+					];
+				}
+				
+				if( !isset( $widgetConfig['name'] ) ) { //
+					$widgetConfig['name'] = $widgetName;
+				}
+				
+				if( !isset( $widgetConfig['label'] ) ) { //
+					$widgetConfig['label'] = static::getLabel( $widgetName );
+				}
+				
+				$widgetConfig['label'] = Yii::t( 'app', ucfirst( $widgetConfig['label'] ) );
+				
+				$inputConfig['widgets'][ $widgetName ] = $widgetConfig;
+				
+			}
+			
+			$inputResult[ $inputType ] = $inputConfig;
+		}
+		
+		return $inputResult;
+	}
+	
+	public static function getLabel( $name )
+	{
+		return preg_replace( '/^(type_|widget_)/', '', $name );
+		
 	}
 	
 	
