@@ -10,8 +10,8 @@ namespace yozh\properties;
 
 use Yii;
 use yii\base\Model;
-use yozh\properties\models\PropertyModel;
-use yozh\properties\models\NewModel;
+use yozh\properties\models\PropertiesModel;
+use yozh\properties\models\AddPropertyModel;
 
 class PropertiesWidget extends \yozh\base\components\Widget
 {
@@ -45,15 +45,15 @@ class PropertiesWidget extends \yozh\base\components\Widget
 	
 	public function run()
 	{
-		$NewModel = new NewModel( [
+		$AddPropertyModel = new AddPropertyModel( [
 			'model'    => $this->_ownerModel::className(),
 			'owner_id' => $this->_ownerModel->primaryKey,
 		] );
 		
 		return $this->render( 'form', [
 			'form'       => $this->form,
-			'NewModel'   => $NewModel,
-			'properties' => PropertyModel::find()->orderBy( 'order')->where( [
+			'AddPropertyModel'   => $AddPropertyModel,
+			'properties' => PropertiesModel::find()->orderBy( 'order')->where( [
 				'model'    => $this->_ownerModel::className(),
 				'table_pk' => $this->_ownerModel->primaryKey,
 			] )->all(),

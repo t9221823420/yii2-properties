@@ -1,7 +1,7 @@
 <?php
 
 use kartik\helpers\Html;
-use yozh\properties\models\NewModel;
+use yozh\properties\models\AddPropertyModel;
 use yozh\properties\AssetsBundle;
 use yii\widgets\Pjax;
 
@@ -9,21 +9,21 @@ AssetsBundle::register( $this );
 
 ?>
 
-<?= $form->field( $NewModel, 'model', [ 'template' => '{input}', 'options' => [ 'tag' => null ] ] )->hiddenInput(); ?>
-<?= $form->field( $NewModel, 'owner_id', [ 'template' => '{input}', 'options' => [ 'tag' => null ] ] )->hiddenInput(); ?>
+<?= $form->field( $AddPropertyModel, 'model', [ 'template' => '{input}', 'options' => [ 'tag' => null ] ] )->hiddenInput(); ?>
+<?= $form->field( $AddPropertyModel, 'owner_id', [ 'template' => '{input}', 'options' => [ 'tag' => null ] ] )->hiddenInput(); ?>
 
 <div class="row new-property-form">
 	
-	<?= $form->field( $NewModel, 'name' )->label( Yii::t( 'properties', 'Name' ) ) ?>
+	<?= $form->field( $AddPropertyModel, 'name' )->label( Yii::t( 'properties', 'Name' ) ) ?>
 	
-	<?= $form->field( $NewModel, 'inputType' )
+	<?= $form->field( $AddPropertyModel, 'inputType' )
 	         ->label( Yii::t( 'properties', 'Select Input' ) )
-	         ->dropDownList( NewModel::inputsList(), [
+	         ->dropDownList( AddPropertyModel::inputsList(), [
 		         'prompt' => Yii::t( 'properties', 'Select ...' ),
 	         ] )
 	; ?>
 	
-	<?= $form->field( $NewModel, 'widget' )
+	<?= $form->field( $AddPropertyModel, 'widget' )
 	         ->label( Yii::t( 'properties', 'Select Widget' ) )
 	         ->dropDownList( [], [
 		         'prompt' => Yii::t( 'properties', 'Select ...' ),
@@ -46,6 +46,6 @@ Pjax::end();
 
 <?php $this->registerJs( $this->render( '_js.php', [
 	'section' => 'onload',
-	'widgets' => implode( ',', NewModel::widgetsListOutput() ),
+	'widgets' => implode( ',', AddPropertyModel::widgetsListOutput() ),
 ] ), $this::POS_READY );
 ?>

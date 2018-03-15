@@ -1,6 +1,6 @@
 <?php
 
-use yozh\properties\models\PropertyModel;
+use yozh\properties\models\PropertiesModel;
 use yii\widgets\ActiveForm;
 use powerkernel\tinymce\TinyMce;
 use kartik\markdown\MarkdownEditor;
@@ -15,63 +15,63 @@ $options = [
 	],
 ];
 
-$type = $PropertyModel->type;
+$type = $PropertiesModel->type;
 
 /**
- * @var $PropertyModel \yii\db\ActiveRecord
+ * @var $PropertiesModel \yii\db\ActiveRecord
  */
-if( $PropertyModel->isNewRecord ) { //
+if( $PropertiesModel->isNewRecord ) { //
 	$attribute = '[new][]value';
 }
 else { //
 	
-	$attribute = '[' . $PropertyModel->primaryKey . ']value';
+	$attribute = '[' . $PropertiesModel->primaryKey . ']value';
 	
 	$options = array_merge_recursive( $options, [
 		'inputOptions' => [
-			'data-id' => $PropertyModel->primaryKey,
-			'value'   => $PropertyModel->$type,
+			'data-id' => $PropertiesModel->primaryKey,
+			'value'   => $PropertiesModel->$type,
 		],
 	] );
 }
 
-$field = $form->field( $PropertyModel, $attribute, $options );
+$field = $form->field( $PropertiesModel, $attribute, $options );
 
-switch( $PropertyModel->widget ) {
+switch( $PropertiesModel->widget ) {
 	
-	case PropertyModel::WIDGET_TYPE_TEXTAREA :
+	case PropertiesModel::WIDGET_TYPE_TEXTAREA :
 		
 		$field->textarea( [ 'rows' => 3 ] );
 		
 		break;
 	
-	case PropertyModel::WIDGET_TYPE_TEXTEDITOR :
+	case PropertiesModel::WIDGET_TYPE_TEXTEDITOR :
 		
 		$field->widget(
 			TinyMce::className(),
 			[
 				'options' => [
-					'id'   => 'editor-' . $PropertyModel->primaryKey,
+					'id'   => 'editor-' . $PropertiesModel->primaryKey,
 					'rows' => 20,
-					'data-id' => $PropertyModel->primaryKey,
-					'value'   => $PropertyModel->$type,
+					'data-id' => $PropertiesModel->primaryKey,
+					'value'   => $PropertiesModel->$type,
 				],
 			]
 		);
 		
 		break;
 	
-	case PropertyModel::WIDGET_TYPE_MARKUP :
+	case PropertiesModel::WIDGET_TYPE_MARKUP :
 		
 		$field->widget(
 			MarkdownEditor::className(),
 			[
-				'model' => $PropertyModel,
-				'attribute' => $PropertyModel->type,
+				'model' => $PropertiesModel,
+				'attribute' => $PropertiesModel->type,
 				'options' => [
-					'id'   => 'editor-' . $PropertyModel->primaryKey,
-					'data-id' => $PropertyModel->primaryKey,
-					'value'   => $PropertyModel->$type,
+					'id'   => 'editor-' . $PropertiesModel->primaryKey,
+					'data-id' => $PropertiesModel->primaryKey,
+					'value'   => $PropertiesModel->$type,
 				],
 			]
 		);
@@ -83,10 +83,10 @@ switch( $PropertyModel->widget ) {
 ActiveForm::end();
 ob_get_clean();
 
-$field->label( Yii::t( 'app', ucfirst( !empty( $PropertyModel->name ) ? $PropertyModel->name : str_replace( 'type_', '', $PropertyModel->type ) ) ) );
+$field->label( Yii::t( 'app', ucfirst( !empty( $PropertiesModel->name ) ? $PropertiesModel->name : str_replace( 'type_', '', $PropertiesModel->type ) ) ) );
 
 $menu = $this->context->renderFile( '@yozh/properties/views/_inputMenu.php', [
-	'PropertyModel' => $PropertyModel,
+	'PropertiesModel' => $PropertiesModel,
 ] );
 
 $field->parts['{label}'] = preg_replace( '/>(.+)(<\/label>)/', '><span class="text">$1</span>' . $menu . '$2', $field->parts['{label}'] );

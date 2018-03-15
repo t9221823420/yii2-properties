@@ -1,7 +1,7 @@
 <?php
 
 use yii\helpers\Url;
-use yozh\properties\models\PropertyModel;
+use yozh\properties\models\PropertiesModel;
 
 ?>
 
@@ -13,15 +13,15 @@ _widgets = {<?= $widgets;?>};
 
 $(function() {
     
-    $('select[name="NewModel[inputType]"]').on('change', function(){
+    $('select[name="AddPropertyModel[inputType]"]').on('change', function(){
         
         if( $(this).val() ){
-            $('select[name="NewModel[widget]"]').html( _widgets[$(this).val()] );
+            $('select[name="AddPropertyModel[widget]"]').html( _widgets[$(this).val()] );
             //$('#widget').removeClass('hide');
             $('#addButton').removeClass('disabled');
         }
         else{
-            $('select[name="NewModel[widget]"]').html('<option value=""><?= Yii::t( 'properties', 'Select input' ) ?></option>');
+            $('select[name="AddPropertyModel[widget]"]').html('<option value=""><?= Yii::t( 'properties', 'Select input' ) ?></option>');
             //$('#widget').addClass('hide');
             $('#addButton').addClass('disabled');
         }
@@ -32,7 +32,7 @@ $(function() {
 
         var _data = {};
         
-        $('*[name^="NewModel"]').each(function( _index, _input ) {
+        $('*[name^="AddPropertyModel"]').each(function( _index, _input ) {
             _data[ $(_input).attr('name') ] = $(_input).val() ;
         });
         
@@ -46,7 +46,7 @@ $(function() {
             $('#inputs').append( _response.html );
 
             switch ( _response.widget ) {
-                case '<?= PropertyModel::WIDGET_TYPE_TEXTEDITOR ?>':
+                case '<?= PropertiesModel::WIDGET_TYPE_TEXTEDITOR ?>':
 
                     var _editorId = 'editor-' + _response.id;
 

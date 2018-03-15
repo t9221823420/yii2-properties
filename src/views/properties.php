@@ -6,9 +6,9 @@
  * Time: 1:21
  */
 
-use yozh\properties\models\PropertyModel;
+use yozh\properties\models\PropertiesModel;
 
-$inputsConfig = PropertyModel::getInputs();
+$inputsConfig = PropertiesModel::getInputs();
 
 ?>
 

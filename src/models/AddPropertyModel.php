@@ -11,9 +11,10 @@ namespace yozh\properties\models;
 use Yii;
 use yii\base\Model;
 use yozh\properties\models\PropertyModel;
+use yozh\properties\models\PropertiesModel;
 use yii\helpers\ArrayHelper;
 
-class NewModel extends Model
+class AddPropertyModel extends Model
 {
 	
 	public $inputType;
@@ -41,7 +42,7 @@ class NewModel extends Model
 	
 	public static function inputsList()
 	{
-		$inputs = PropertyModel::getInputs();
+		$inputs = PropertiesModel::getInputs();
 		
 		$output = [];
 		foreach( $inputs as $inputType => $inputConfig ) {
@@ -53,7 +54,7 @@ class NewModel extends Model
 	
 	public static function widgetsListOutput()
 	{
-		$inputs = PropertyModel::getInputs();
+		$inputs = PropertiesModel::getInputs();
 		
 		$output = [];
 		foreach( $inputs as $inputType => $inputConfig ) {

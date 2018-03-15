@@ -3,25 +3,26 @@
 namespace yozh\properties\controllers;
 
 use Yii;
+use yozh\properties\models\PropertiesModel;
 use yozh\properties\models\PropertyModel;
-use yozh\properties\models\NewModel;
+use yozh\properties\models\AddPropertyModel;
 use yozh\base\controllers\DefaultController as Controller;
 use yii\web\Response;
 
 class DefaultController extends Controller
 {
-	protected static function primaryModel()
+	protected static function defaultModel()
 	{
-		return PropertyModel::className();
+		return PropertiesModel::className();
 	}
 	
 	public function actionGetInput()
 	{
-		$NewModel = new NewModel();
+		$AddPropertyModel = new AddPropertyModel();
 		
-		if( $NewModel->load( Yii::$app->request->post() ) ) {
+		if( $AddPropertyModel->load( Yii::$app->request->post() ) ) {
 			
-			$PropertyModel = new PropertyModel( $NewModel->attributes );
+			$PropertyModel = new PropertyModel( $AddPropertyModel->attributes );
 			
 			if( empty($PropertyModel->name) ){
 				$PropertyModel->name = $PropertyModel->type;
@@ -29,8 +30,8 @@ class DefaultController extends Controller
 			
 			$PropertyModel->name = PropertyModel::getLabel( $PropertyModel->name );
 			
-			$inputsConfig = PropertyModel::getInputs();
-			extract( $NewModel->getAttributes() );
+			$inputsConfig = PropertiesModel::getInputs();
+			extract( $AddPropertyModel->getAttributes() );
 			
 			/*
 			$testModel = $PropertyModel->model;

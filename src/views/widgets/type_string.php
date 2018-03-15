@@ -1,6 +1,5 @@
 <?php
 
-use yozh\properties\models\PropertyModel;
 use yii\widgets\ActiveForm;
 
 ob_start();
@@ -37,12 +36,13 @@ $field = $form->field( $PropertyModel, $attribute, $options );
 
 switch( $PropertyModel->widget ) {
 	
+	/*
 	case PropertyModel::WIDGET_TYPE_TEXT :
 		
 		// 'template'=>'{input}{foo}'
 		
 		break;
-	
+	*/
 }
 
 ActiveForm::end();
