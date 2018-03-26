@@ -4,7 +4,7 @@ namespace yozh\properties\models;
 
 use Yii;
 use yii\base\Model;
-use yozh\base\models\Model as ActiveRecord;
+use yozh\base\models\BaseModel as ActiveRecord;
 
 class PropertiesModel extends ActiveRecord
 {
