@@ -2,10 +2,10 @@
 
 use kartik\helpers\Html;
 use yozh\properties\models\AddPropertyModel;
-use yozh\properties\AssetsBundle;
+use yozh\properties\AssetBundle;
 use yii\widgets\Pjax;
 
-AssetsBundle::register( $this );
+AssetBundle::register( $this );
 
 ?>
 
