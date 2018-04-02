@@ -86,27 +86,14 @@ class PropertiesModel extends ActiveRecord
 	
 	static public function getInputsTypes()
 	{
-		$list = static::_getConstList( 'INPUT_TYPE_' );
+		$list = static::getConstantsList( 'INPUT_TYPE_' );
 		unset( $list[ 'INPUT_TYPE_DEFAULT' ] );
-		return $list;
-	}
-	
-	static protected function _getConstList( $prefix )
-	{
-		$list = ( new \ReflectionClass( static::class ) )->getConstants();
-		
-		foreach( $list as $key => $const ) {
-			if( strpos( $key, $prefix ) === false ) {
-				unset( $list[ $key ] );
-			}
-		}
-		
 		return $list;
 	}
 	
 	static public function getWidgetsTypes()
 	{
-		return static::_getConstList( 'WIDGET_TYPE_' );
+		return static::getConstantsList( 'WIDGET_TYPE_' );
 	}
 	
 	public function getModelClass()
