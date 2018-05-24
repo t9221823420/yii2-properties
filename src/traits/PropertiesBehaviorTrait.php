@@ -9,7 +9,7 @@
 namespace yozh\properties\traits;
 
 use yii\db\ActiveQuery;
-use yozh\base\components\ArrayHelper;
+use yozh\base\components\utils\ArrayHelper;
 use yii\base\Model;
 use yii\base\InvalidParamException;
 
