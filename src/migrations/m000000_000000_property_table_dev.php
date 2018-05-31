@@ -1,6 +1,6 @@
 <?php
 
-use yozh\base\components\Migration;
+use yozh\base\components\db\Migration;
 use yozh\base\components\db\Schema;
 use yozh\properties\models\PropertiesModel;
 

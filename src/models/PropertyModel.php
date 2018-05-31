@@ -15,4 +15,10 @@ class PropertyModel extends ActiveRecord
 	protected $_value;
 	protected $_model;
 	
+	public static function tableName()
+	{
+		return 'property';
+	}
+	
+	
 }

@@ -11,9 +11,9 @@ use yii\web\Response;
 
 class DefaultController extends Controller
 {
-	protected static function defaultModel()
+	public static function defaultModelClass()
 	{
-		return PropertiesModel::className();
+		return PropertiesModel::class;
 	}
 	
 	public function actionGetInput()
@@ -24,7 +24,7 @@ class DefaultController extends Controller
 			
 			$PropertyModel = new PropertyModel( $AddPropertyModel->attributes );
 			
-			if( empty($PropertyModel->name) ){
+			if( empty( $PropertyModel->name ) ) {
 				$PropertyModel->name = $PropertyModel->type;
 			}
 			
@@ -38,7 +38,7 @@ class DefaultController extends Controller
 			$foo =  $testModel->getProperties('some prop', true, 'some default value')->value;
 			*/
 			
-			if( !isset($testModel) && isset( $inputsConfig[ $inputType ]['widgets'][ $widget ] )
+			if( !isset( $testModel ) && isset( $inputsConfig[ $inputType ]['widgets'][ $widget ] )
 				&& $PropertyModel->validate( null, false ) // because ->save() clears errors,
 				&& $PropertyModel->save( false )
 			) {
@@ -124,4 +124,8 @@ class DefaultController extends Controller
 		] );
 	}
 	
+	public function actionGetWidgets( $inputType )
+	{
+		return PropertiesModel::getWidgets( $inputType );
+	}
 }

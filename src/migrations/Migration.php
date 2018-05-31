@@ -1,6 +1,6 @@
 <?php
 
-use yozh\base\components\Migration as BaseMigration;
+use yozh\base\components\db\Migration as BaseMigration;
 
 /**
  * Class m180301_142414_add_column_to_properties_table

@@ -5,95 +5,48 @@ namespace yozh\properties\models;
 use Yii;
 use yii\base\Model;
 use yozh\base\models\BaseModel as ActiveRecord;
+use yozh\form\ActiveField;
+use yozh\widget\BaseWidget as Widget;
 
 class PropertiesModel extends ActiveRecord
 {
-	
-	const INPUT_TYPE_STRING = 'type_string';
-	const INPUT_TYPE_TEXT   = 'type_text';
-	
-	const INPUT_TYPE_INTEGER = 'type_integer';
-	const INPUT_TYPE_DECIMAL = 'type_decimal';
-	
-	const INPUT_TYPE_DATE     = 'type_date';
-	const INPUT_TYPE_TIME     = 'type_time';
-	const INPUT_TYPE_DATETIME = 'type_datetime';
-	
-	const INPUT_TYPE_BOOLEAN = 'type_boolean';
-	const INPUT_TYPE_LIST    = 'type_list';
-	
-	const INPUT_TYPE_HASH = 'type_hash';
-	const INPUT_TYPE_JSON = 'type_json';
-	
-	const INPUT_TYPE_DEFAULT = self::INPUT_TYPE_STRING;
-	
-	const WIDGET_TYPE_TEXT       = 'widget_text';
-	const WIDGET_TYPE_TEXTAREA   = 'widget_textarea';
-	const WIDGET_TYPE_TEXTEDITOR = 'widget_texteditor';
-	const WIDGET_TYPE_MARKUP     = 'widget_markup';
-	const WIDGET_TYPE_PASSWORD   = 'widget_password';
-	
-	const WIDGET_TYPE_DATE     = 'widget_date';
-	const WIDGET_TYPE_TIME     = 'widget_time';
-	const WIDGET_TYPE_DATETIME = 'widget_datetime';
-	
-	const WIDGET_TYPE_SWITCH   = 'widget_switch';
-	const WIDGET_TYPE_RADIO    = 'widget_radio';
-	const WIDGET_TYPE_CHECKBOX = 'widget_checkbox';
-	const WIDGET_TYPE_SELECT   = 'widget_select';
-	const WIDGET_TYPE_DROPDOWN = 'widget_dropdown';
-	
-	protected static $_inputsConfig;
 	
 	public static function tableName()
 	{
 		return 'property';
 	}
 	
-	static public function getDefaultInputType()
-	{
-		return static::INPUT_TYPE_DEFAULT;
-	}
-	
+	/*
 	static public function getInputsLabels()
 	{
 		return [
-			static::INPUT_TYPE_STRING   => Yii::t( 'properties', 'String' ),
-			static::INPUT_TYPE_TEXT     => Yii::t( 'properties', 'Text' ),
-			static::INPUT_TYPE_INTEGER  => Yii::t( 'properties', 'Integer' ),
-			static::INPUT_TYPE_DECIMAL  => Yii::t( 'properties', 'Decimal' ),
-			static::INPUT_TYPE_DATE     => Yii::t( 'properties', 'Date' ),
-			static::INPUT_TYPE_TIME     => Yii::t( 'properties', 'Time' ),
-			static::INPUT_TYPE_DATETIME => Yii::t( 'properties', 'Datetime' ),
-			static::INPUT_TYPE_BOOLEAN  => Yii::t( 'properties', 'Boolean' ),
-			static::INPUT_TYPE_LIST     => Yii::t( 'properties', 'List' ),
+			ActiveField::INPUT_TYPE_STRING   => Yii::t( 'properties', 'String' ),
+			ActiveField::INPUT_TYPE_TEXT     => Yii::t( 'properties', 'Text' ),
+			ActiveField::INPUT_TYPE_INTEGER  => Yii::t( 'properties', 'Integer' ),
+			ActiveField::INPUT_TYPE_DECIMAL  => Yii::t( 'properties', 'Decimal' ),
+			ActiveField::INPUT_TYPE_DATE     => Yii::t( 'properties', 'Date' ),
+			ActiveField::INPUT_TYPE_TIME     => Yii::t( 'properties', 'Time' ),
+			ActiveField::INPUT_TYPE_DATETIME => Yii::t( 'properties', 'Datetime' ),
+			ActiveField::INPUT_TYPE_BOOLEAN  => Yii::t( 'properties', 'Boolean' ),
+			ActiveField::INPUT_TYPE_LIST     => Yii::t( 'properties', 'List' ),
 		
 		];
 	}
+	*/
+	
+
 	
 	public function rules()
 	{
 		return [
 			[ [ 'table', 'owner_id', 'model', 'type', 'widget' ], 'required' ],
 			[ [ 'table', 'name' ], 'string', 'max' => 255 ],
-			[ [ 'inputType', 'type' ], 'in', 'range' => PropertiesModel::getInputsTypes() ],
-			[ [ 'widget' ], 'in', 'range' => PropertyModel::getWidgetsNames() ],
+			[ [ 'inputType', 'type' ], 'in', 'range' => ActiveField::getConstants('INPUT_TYPE_') ],
+			[ [ 'widgetType', 'widget' ], 'in', 'range' => ActiveField::getConstants('WIDGET_TYPE_') ],
 			[ [ 'owner_id' ], 'integer' ],
 			[ [ 'model' ], 'exist', 'skipOnError' => true, 'targetAttribute' => [ 'owner_id' => 'id' ], 'targetClass' => $this->getModelClass() ],
 		
 		];
-	}
-	
-	static public function getInputsTypes()
-	{
-		$list = static::getConstantsList( 'INPUT_TYPE_' );
-		unset( $list[ 'INPUT_TYPE_DEFAULT' ] );
-		return $list;
-	}
-	
-	static public function getWidgetsTypes()
-	{
-		return static::getConstantsList( 'WIDGET_TYPE_' );
 	}
 	
 	public function getModelClass()
@@ -227,140 +180,6 @@ class PropertiesModel extends ActiveRecord
 				parent::__set( $name, $value );
 			
 		}
-	}
-	
-	static public function getDefaultWidget( $inputType = null )
-	{
-		$inputType = $inputType ?? static::getDefaultInputType();
-		
-		$inputs = static::getInputs();
-		
-		if( isset( $inputs[ $inputType ]['widgets'] ) ) {
-			return reset( $inputs[ $inputType ]['widgets'] );
-		}
-		
-		throw new \yii\base\InvalidParamException( "Default widget for inputType '$inputType' not found." );
-	}
-	
-	public static function getInputs()
-	{
-		
-		if( !static::$_inputsConfig ) {
-			static::$_inputsConfig = static::_initConfig();
-		}
-		
-		return static::$_inputsConfig;
-	}
-	
-	protected static function _initConfig()
-	{
-		$config = [
-			
-			static::INPUT_TYPE_STRING => [
-				'widgets' => [
-					static::WIDGET_TYPE_TEXT => [
-						'rules'  => [
-						
-						],
-						'config' => [],
-					],
-				],
-			],
-			
-			static::INPUT_TYPE_TEXT => [
-				'widgets' => [
-					static::WIDGET_TYPE_TEXTAREA,
-					static::WIDGET_TYPE_TEXTEDITOR,
-					static::WIDGET_TYPE_MARKUP,
-				],
-			],
-			
-			/*
-			static::INPUT_TYPE_DATE     => [
-				'widgets' => [
-					static::WIDGET_TYPE_DATE,
-				],
-			],
-			static::INPUT_TYPE_TIME     => [
-				'widgets' => [
-					static::WIDGET_TYPE_TIME,
-				],
-			],
-			static::INPUT_TYPE_DATETIME => [
-				'widgets' => [
-					static::WIDGET_TYPE_DATETIME,
-				],
-			],
-			
-			static::INPUT_TYPE_BOOLEAN => [
-				'widgets' => [
-					static::WIDGET_TYPE_SWITCH,
-					static::WIDGET_TYPE_RADIO,
-				],
-			],
-			*/
-		
-		];
-		
-		$inputResult = [];
-		
-		foreach( $config as $inputType => $inputConfig ) {
-			
-			if( !is_array( $inputConfig ) ) {
-				$inputType   = $inputConfig;
-				$inputConfig = [
-					'widgets' => [
-						$inputType,
-					],
-				];
-			}
-			
-			if( !isset( $inputConfig['name'] ) ) { //
-				$inputConfig['name'] = $inputType;
-			}
-			
-			if( !isset( $inputConfig['label'] ) ) { //
-				$inputConfig['label'] = static::getLabel( $inputType );
-			}
-			
-			$inputConfig['label'] = Yii::t( 'app', ucfirst( $inputConfig['label'] ) );
-			
-			foreach( $inputConfig['widgets'] as $widgetName => $widgetConfig ) {
-				
-				unset( $inputConfig['widgets'][ $widgetName ] );
-				
-				if( !is_array( $widgetConfig ) ) {
-					$widgetName   = $widgetConfig;
-					$widgetConfig = [
-						'rules'  => [],
-						'config' => [],
-					];
-				}
-				
-				if( !isset( $widgetConfig['name'] ) ) { //
-					$widgetConfig['name'] = $widgetName;
-				}
-				
-				if( !isset( $widgetConfig['label'] ) ) { //
-					$widgetConfig['label'] = static::getLabel( $widgetName );
-				}
-				
-				$widgetConfig['label'] = Yii::t( 'app', ucfirst( $widgetConfig['label'] ) );
-				
-				$inputConfig['widgets'][ $widgetName ] = $widgetConfig;
-				
-			}
-			
-			$inputResult[ $inputType ] = $inputConfig;
-		}
-		
-		return $inputResult;
-	}
-	
-	public static function getLabel( $name )
-	{
-		return preg_replace( '/^(type_|widget_)/', '', $name );
-		
 	}
 	
 	
