@@ -35,7 +35,7 @@ class PropertiesBehavior extends \yozh\base\components\Behavior
 		}
 		
 		$this->$_PropertyModel = new PropertyModel( [
-			'model' => $this->owner,
+			'Model' => $this->owner,
 		] );
 	}
 	*/

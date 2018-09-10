@@ -109,7 +109,7 @@ class DefaultController extends Controller
 		return false;
 	}
 	
-	public function actionDelete( $id, $model, $oid )
+	public function actionDelete( $id, $Model, $oid )
 	{
 		$this->_findModel( [
 			'id' => $id,
@@ -118,7 +118,7 @@ class DefaultController extends Controller
 		
 		return $this->renderFile( '@yozh/properties/views/properties.php', [
 			'properties' => PropertyModel::findAll( [
-				'model'    => $model,
+				'model'    => $Model,
 				'table_pk' => $oid,
 			] ),
 		] );

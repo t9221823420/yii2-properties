@@ -6,7 +6,7 @@ use Yii;
 use yii\base\Model;
 use yozh\base\models\BaseModel as ActiveRecord;
 use yozh\form\ActiveField;
-use yozh\widget\BaseWidget as Widget;
+use yozh\widget\widgets\BaseWidget as Widget;
 
 class PropertiesModel extends ActiveRecord
 {
@@ -39,7 +39,7 @@ class PropertiesModel extends ActiveRecord
 	public function rules()
 	{
 		return [
-			[ [ 'table', 'owner_id', 'model', 'type', 'widget' ], 'required' ],
+			[ [ 'table', 'owner_id', 'Mmdel', 'type', 'widget' ], 'required' ],
 			[ [ 'table', 'name' ], 'string', 'max' => 255 ],
 			[ [ 'inputType', 'type' ], 'in', 'range' => ActiveField::getConstants('INPUT_TYPE_') ],
 			[ [ 'widgetType', 'widget' ], 'in', 'range' => ActiveField::getConstants('WIDGET_TYPE_') ],
@@ -54,8 +54,8 @@ class PropertiesModel extends ActiveRecord
 		if( $this->model ) { //
 			return $this->model::className();
 		}
-		else if( ( $data = Yii::$app->request->post( 'AddPropertyModel' ) ) && isset( $data['model'] ) ) { //
-			return $data['model'];
+		else if( ( $data = Yii::$app->request->post( 'AddPropertyModel' ) ) && isset( $data['Model'] ) ) { //
+			return $data['Model'];
 		}
 		else {
 			$this->addError( 'owner_id', 'Model not set' );
@@ -119,20 +119,20 @@ class PropertiesModel extends ActiveRecord
 				
 				if( $value instanceof Model ) { //
 					
-					$model = $value;
-					$value = $model::className();
+					$Model = $value;
+					$value = $Model::className();
 					
 				}
-				else if( !( is_string( $value ) && class_exists( $value ) && ( $model = new $value() ) instanceof Model ) ) {
+				else if( !( is_string( $value ) && class_exists( $value ) && ( $Model = new $value() ) instanceof Model ) ) {
 					throw new \yii\base\InvalidParamException( "$value have to be instance of Model" );
 				}
 				
 				if( !$this->getAttribute( 'table' ) ) {
-					$this->setAttribute( 'table', $model::tableName() );
+					$this->setAttribute( 'table', $Model::tableName() );
 				}
 				
 				if( !$this->getAttribute( 'table_pk' ) ) {
-					$this->setAttribute( 'table_pk', $model->primaryKey );
+					$this->setAttribute( 'table_pk', $Model->primaryKey );
 				}
 				
 				parent::__set( $name, $value );
