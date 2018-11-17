@@ -4,7 +4,7 @@ namespace yozh\properties\models;
 
 use Yii;
 use yii\base\Model;
-use yozh\base\models\BaseModel as ActiveRecord;
+use yozh\base\models\BaseActiveRecord as ActiveRecord;
 use yozh\form\ActiveField;
 use yozh\widget\widgets\BaseWidget as Widget;
 

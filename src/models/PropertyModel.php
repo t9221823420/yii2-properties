@@ -8,7 +8,7 @@
 
 namespace yozh\properties\models;
 
-use yozh\base\models\BaseModel as ActiveRecord;
+use yozh\base\models\BaseActiveRecord as ActiveRecord;
 
 class PropertyModel extends ActiveRecord
 {
