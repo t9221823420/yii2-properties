@@ -72,7 +72,7 @@ class AddPropertyModel extends Model
 		
 	}
 	
-	public function rules()
+	public function rules( $rules = [] )
 	{
 		return [
 			[ [ 'inputType', 'widget', 'model', 'owner_id',  ], 'required' ],

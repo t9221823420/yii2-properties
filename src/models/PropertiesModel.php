@@ -36,7 +36,7 @@ class PropertiesModel extends ActiveRecord
 	
 
 	
-	public function rules()
+	public function rules( $rules = [] )
 	{
 		return [
 			[ [ 'table', 'owner_id', 'Mmdel', 'type', 'widget' ], 'required' ],
